@@ -2,10 +2,12 @@
 
 /** Stable, switchable error codes mapped from HTTP status. */
 export type AskChannelErrorCode =
-  | "bad_request" // 400 — invalid question/provider/platform
+  | "bad_request" // 400 — invalid question/provider/platform/channel
   | "unauthorized" // 401 — token missing, invalid, revoked, or not premium
+  | "payment_required" // 402 — not enough import credits
   | "quota_exceeded" // 403 — daily question limit reached for the token
-  | "not_found" // 404 — channel not indexed
+  | "not_found" // 404 — channel not found (not indexed / not on YouTube)
+  | "import_in_progress" // 409 — this channel is already importing
   | "rate_limited" // 429 — too many requests (burst limit)
   | "server_error" // 5xx — AskChannel outage
   | "network" // request never completed (DNS, timeout, abort)
@@ -14,8 +16,10 @@ export type AskChannelErrorCode =
 const CODE_BY_STATUS: Record<number, AskChannelErrorCode> = {
   400: "bad_request",
   401: "unauthorized",
+  402: "payment_required",
   403: "quota_exceeded",
   404: "not_found",
+  409: "import_in_progress",
   429: "rate_limited",
 };
 

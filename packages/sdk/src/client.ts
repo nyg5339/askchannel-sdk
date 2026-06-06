@@ -4,6 +4,10 @@ import type {
   AskResponse,
   Channel,
   ClientOptions,
+  ImportParams,
+  ImportProgress,
+  ImportQuote,
+  ImportResult,
   Provider,
 } from "./types.js";
 
@@ -123,6 +127,161 @@ export class AskChannelClient {
     if (!data) return [];
     const rows = (data as { channels?: RawChannel[] }).channels ?? [];
     return rows.map((c) => this.mapChannel(c));
+  }
+
+  /**
+   * Search **all of YouTube** for channels to import (discovery) — NOT limited
+   * to channels already indexed on AskChannel. Use this to power an import
+   * picker; use {@link searchChannels} for channels you can already ask. Public,
+   * no token. Returns [] for an empty query and degrades to [] on error.
+   */
+  async searchYouTubeChannels(
+    query: string,
+    opts: { signal?: AbortSignal; timeoutMs?: number } = {},
+  ): Promise<Channel[]> {
+    const q = query.trim();
+    if (!q) return [];
+    const url = `${this.baseUrl}/api/channels/search?q=${encodeURIComponent(q)}`;
+    let data: unknown;
+    try {
+      data = await this.request(url, {
+        method: "GET",
+        signal: opts.signal,
+        timeoutMs: opts.timeoutMs ?? 8_000,
+        op: "searchYouTubeChannels",
+        softErrors: true,
+      });
+    } catch {
+      return [];
+    }
+    const rows = ((data as { channels?: RawChannel[] })?.channels ?? []) as RawChannel[];
+    return rows.map((c) => this.mapChannel(c));
+  }
+
+  /**
+   * No-side-effects credit quote for importing a channel — resolves it on
+   * YouTube and reports the cost vs. the token account's balance. Requires a
+   * token. Throws `not_found` (404) if the channel doesn't exist on YouTube.
+   */
+  async quoteImport(
+    channel: string,
+    opts: { signal?: AbortSignal; timeoutMs?: number } = {},
+  ): Promise<ImportQuote> {
+    this.assertToken("quoteImport");
+    const data = (await this.request(`${this.baseUrl}/api/imports/quote`, {
+      method: "POST",
+      headers: this.authJsonHeaders(),
+      body: JSON.stringify({ channelUrl: channel }),
+      signal: opts.signal,
+      timeoutMs: opts.timeoutMs,
+      op: "quoteImport",
+    })) as Record<string, unknown>;
+    return {
+      channelId: String(data.channelId),
+      title: String(data.channelTitle ?? ""),
+      handle: (data.channelHandle as string | null) ?? undefined,
+      importable: Number(data.importableVideos ?? 0),
+      total: Number(data.totalVideos ?? 0),
+      creditCost: Number(data.creditCost ?? 0),
+      balance: data.unlimited ? null : ((data.balance as number | null) ?? null),
+      hasEnough: Boolean(data.hasEnough),
+    };
+  }
+
+  /**
+   * Trigger a channel import. Requires a token; **charges credits** to the
+   * token account. The pipeline runs async — pass `callbackUrl` to get a signed
+   * webhook on completion, or poll with {@link waitForImport}.
+   *
+   * @throws {AskChannelError} `payment_required` (402, not enough credits),
+   * `import_in_progress` (409), `not_found` (404), or `server_error`.
+   */
+  async importChannel(params: ImportParams): Promise<ImportResult> {
+    this.assertToken("importChannel");
+    const body: Record<string, unknown> = { channelUrl: params.channel };
+    if (params.callbackUrl) body.callback_url = params.callbackUrl;
+    const data = (await this.request(`${this.baseUrl}/api/channels/import`, {
+      method: "POST",
+      headers: this.authJsonHeaders(),
+      body: JSON.stringify(body),
+      signal: params.signal,
+      timeoutMs: params.timeoutMs,
+      op: "importChannel",
+    })) as Record<string, unknown>;
+    return {
+      channel: (data.channel as ImportResult["channel"]) ?? { id: params.channel },
+      isNew: Boolean(data.isNew),
+      alreadyImported: Boolean(data.alreadyImported),
+      queued: Boolean(data.queued),
+      runId: data.runId as string | undefined,
+      importCredits: data.importCredits as ImportResult["importCredits"],
+    };
+  }
+
+  /** Poll the import progress for a channel once. Public — no token needed. */
+  async getImportProgress(
+    channelId: string,
+    opts: { signal?: AbortSignal; timeoutMs?: number } = {},
+  ): Promise<ImportProgress> {
+    const url = `${this.baseUrl}/api/channels/${encodeURIComponent(channelId)}/import-progress`;
+    const data = (await this.request(url, {
+      method: "GET",
+      signal: opts.signal,
+      timeoutMs: opts.timeoutMs ?? 15_000,
+      op: "getImportProgress",
+    })) as { progress?: Record<string, unknown> | null };
+    const p = data?.progress ?? null;
+    const status = (p?.status as ImportProgress["status"]) ?? null;
+    return {
+      channelId,
+      status,
+      step: (p?.step as string) ?? undefined,
+      message: (p?.message as string) ?? undefined,
+      processed: (p?.processed as number) ?? undefined,
+      total: (p?.total as number) ?? undefined,
+      done: status === "completed" || status === "failed",
+    };
+  }
+
+  /**
+   * Poll until the import completes or fails (or `timeoutMs` elapses). For
+   * clients WITHOUT a webhook `callbackUrl`. Calls `onProgress` each poll.
+   */
+  async waitForImport(
+    channelId: string,
+    opts: {
+      pollMs?: number;
+      timeoutMs?: number;
+      onProgress?: (p: ImportProgress) => void;
+      signal?: AbortSignal;
+    } = {},
+  ): Promise<ImportProgress> {
+    const pollMs = Math.max(1_000, opts.pollMs ?? 5_000);
+    const start = Date.now();
+    for (;;) {
+      const p = await this.getImportProgress(channelId, { signal: opts.signal });
+      opts.onProgress?.(p);
+      if (p.done) return p;
+      if (opts.signal?.aborted) return p;
+      if (opts.timeoutMs && Date.now() - start >= opts.timeoutMs) return p;
+      await new Promise((resolve) => setTimeout(resolve, pollMs));
+    }
+  }
+
+  private assertToken(op: string): void {
+    if (!this.token) {
+      throw new AskChannelError(`A premium token is required for ${op}().`, {
+        status: 0,
+        code: "unauthorized",
+      });
+    }
+  }
+
+  private authJsonHeaders(): Record<string, string> {
+    return {
+      "content-type": "application/json",
+      authorization: `Bearer ${this.token}`,
+    };
   }
 
   private mapChannel(c: RawChannel): Channel {

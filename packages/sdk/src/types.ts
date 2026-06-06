@@ -86,6 +86,84 @@ export interface Channel {
   subscriberCount?: string;
 }
 
+/** A no-side-effects cost estimate for importing a channel. */
+export interface ImportQuote {
+  /** Resolved `UC…` channel id. */
+  channelId: string;
+  title: string;
+  handle?: string;
+  /** Importable (non-short) video count — what you're billed for. */
+  importable: number;
+  /** Total videos on the channel. */
+  total: number;
+  /** Credit cost = `importable`. */
+  creditCost: number;
+  /** Current credit balance, or null for unlimited accounts. */
+  balance: number | null;
+  /** Whether the account can afford the import right now. */
+  hasEnough: boolean;
+}
+
+/** Parameters for {@link AskChannelClient.importChannel}. */
+export interface ImportParams {
+  /** A YouTube channel URL, `@handle`, or `UC…` id to import. */
+  channel: string;
+  /**
+   * Optional HTTPS URL AskChannel will POST when the import completes or fails
+   * (signed with `X-AskChannel-Signature`). Lets a bot react without polling.
+   */
+  callbackUrl?: string;
+  signal?: AbortSignal;
+  timeoutMs?: number;
+}
+
+/** Result of triggering an import. The pipeline runs async afterwards. */
+export interface ImportResult {
+  /** The channel row (public shape). */
+  channel: { id: string; title?: string; custom_url?: string | null; [k: string]: unknown };
+  /** True when this call registered a brand-new channel. */
+  isNew: boolean;
+  /** True when the channel was already indexed — nothing to do. */
+  alreadyImported: boolean;
+  /** True when queued behind another in-flight import (starts automatically). */
+  queued: boolean;
+  /** Run id, present when the import started immediately (not queued). */
+  runId?: string;
+  /** Credit charge summary, when a new import was kicked off. */
+  importCredits?: { status?: string; credits: number; balance: number };
+}
+
+/** A snapshot of import progress (from polling). */
+export interface ImportProgress {
+  channelId: string;
+  /** Pipeline status: running | completed | failed | null (not started). */
+  status: "running" | "completed" | "failed" | null;
+  /** Current phase, e.g. fetching | transcribing | cleanup | embedding | done. */
+  step?: string;
+  message?: string;
+  /** Videos processed so far / total importable, when known. */
+  processed?: number;
+  total?: number;
+  /** Convenience: true once status is completed or failed. */
+  done: boolean;
+}
+
+/** Payload AskChannel POSTs to your `callbackUrl` on import completion/failure. */
+export interface ImportWebhookEvent {
+  event: "import.completed" | "import.failed";
+  channelId: string;
+  handle?: string;
+  title?: string;
+  status: "completed" | "failed";
+  /** Videos imported, on success. */
+  importedVideos?: number;
+  /** Failure detail, on `import.failed`. */
+  error?: string;
+  runId?: string;
+  /** ISO-8601 timestamp. */
+  timestamp: string;
+}
+
 /** Options for constructing an {@link AskChannelClient}. */
 export interface ClientOptions {
   /**

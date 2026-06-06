@@ -7,6 +7,7 @@
  */
 export { AskChannelClient, createAskChannelClient } from "./client.js";
 export { AskChannelError, isAskChannelError, codeForStatus } from "./errors.js";
+export { verifyWebhookSignature } from "./webhook.js";
 export type { AskChannelErrorCode } from "./errors.js";
 export type {
   AskParams,
@@ -16,6 +17,11 @@ export type {
   Citation,
   ClientOptions,
   DiscordRendered,
+  ImportParams,
+  ImportProgress,
+  ImportQuote,
+  ImportResult,
+  ImportWebhookEvent,
   Provider,
   Rendered,
 } from "./types.js";
