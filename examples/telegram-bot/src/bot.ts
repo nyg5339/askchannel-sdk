@@ -1,6 +1,6 @@
 /**
  * AskChannel Telegram bot — inline channel-picker dropdown, built on
- * @askchannel/sdk and grammY.
+ * @askchannelai/sdk and grammY.
  *
  * Commands & flow:
  *   • /askchannel @handle <question>  → answer directly
@@ -12,8 +12,8 @@
  * recovered from the user's reply. Run with: `npm run dev`.
  */
 import { Bot, Context, InlineKeyboard, InlineQueryResultBuilder } from "grammy";
-import { createAskChannelClient, isAskChannelError } from "@askchannel/sdk";
-import type { AskChannelError, Channel } from "@askchannel/sdk";
+import { createAskChannelClient, isAskChannelError } from "@askchannelai/sdk";
+import type { AskChannelError, Channel } from "@askchannelai/sdk";
 
 const BOT_TOKEN = requireEnv("TELEGRAM_BOT_TOKEN");
 const ac = createAskChannelClient({ token: requireEnv("ASKCHANNEL_TOKEN") });

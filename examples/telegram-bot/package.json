@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Telegram bot with an inline channel-picker, built on @askchannel/sdk.",
+  "description": "Telegram bot with an inline channel-picker, built on @askchannelai/sdk.",
   "scripts": {
     "dev": "tsx src/bot.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@askchannel/sdk": "*",
+    "@askchannelai/sdk": "*",
     "grammy": "^1.30.0"
   },
   "devDependencies": {

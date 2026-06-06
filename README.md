@@ -7,7 +7,7 @@ API — ask cited questions over a YouTube channel's transcripts.
 
 | Package | Description |
 |---------|-------------|
-| [`@askchannel/sdk`](packages/sdk) | Tiny, dependency-free API client. Works in any bot, web app, or CLI. |
+| [`@askchannelai/sdk`](packages/sdk) | Tiny, dependency-free API client. Works in any bot, web app, or CLI. |
 
 ## Examples
 
@@ -19,15 +19,15 @@ API — ask cited questions over a YouTube channel's transcripts.
 
 ```bash
 npm install          # installs all workspaces
-npm run build        # builds @askchannel/sdk
+npm run build        # builds @askchannelai/sdk
 npm run typecheck
 ```
 
 ## Publish the SDK
 
 ```bash
-npm run build -w @askchannel/sdk
-npm publish -w @askchannel/sdk    # requires access to the @askchannel npm org
+npm run build -w @askchannelai/sdk
+npm publish -w @askchannelai/sdk    # requires access to the @askchannelai npm org
 ```
 
 ## License

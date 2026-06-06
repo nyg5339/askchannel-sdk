@@ -1,11 +1,11 @@
-# @askchannel/sdk
+# @askchannelai/sdk
 
 Tiny, **dependency-free** TypeScript client for the [AskChannel](https://askchannel.ai)
 API. Ask cited questions over a YouTube channel's transcripts and search the
 channels you can ask. Works anywhere `fetch` exists — bots, web apps, edge, CLIs.
 
 ```bash
-npm i @askchannel/sdk
+npm i @askchannelai/sdk
 ```
 
 > Requires Node 18+ (or any runtime with a global `fetch`).
@@ -13,7 +13,7 @@ npm i @askchannel/sdk
 ## Quick start
 
 ```ts
-import { createAskChannelClient } from "@askchannel/sdk";
+import { createAskChannelClient } from "@askchannelai/sdk";
 
 const ac = createAskChannelClient({ token: process.env.ASKCHANNEL_TOKEN });
 
@@ -69,7 +69,7 @@ Every call throws `AskChannelError` on failure, with a stable `code` you can
 switch on:
 
 ```ts
-import { isAskChannelError } from "@askchannel/sdk";
+import { isAskChannelError } from "@askchannelai/sdk";
 
 try {
   await ac.ask({ channel: "@unknown", question: "hi" });

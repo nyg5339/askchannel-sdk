@@ -1,5 +1,5 @@
 /**
- * @askchannel/sdk — a tiny, dependency-free client for the AskChannel API.
+ * @askchannelai/sdk — a tiny, dependency-free client for the AskChannel API.
  *
  * Ask cited questions over a YouTube channel's transcripts, and search the
  * indexed channels you can ask. Works in any platform bot (Telegram, Discord,

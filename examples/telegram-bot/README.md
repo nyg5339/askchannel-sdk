@@ -1,7 +1,7 @@
 # AskChannel Telegram bot example
 
 A complete Telegram bot with a **searchable inline channel-picker**, built on
-[`@askchannel/sdk`](../../packages/sdk) and [grammY](https://grammy.dev).
+[`@askchannelai/sdk`](../../packages/sdk) and [grammY](https://grammy.dev).
 
 - `/askchannel @handle <question>` — ask a channel directly
 - `/askchannel` — replies with a **🔍 Search channels** button
@@ -17,7 +17,7 @@ SDK methods (`searchChannels`, `ask`).
 ```bash
 # from the monorepo root, once:
 npm install
-npm run build -w @askchannel/sdk      # the example imports the built SDK
+npm run build -w @askchannelai/sdk      # the example imports the built SDK
 
 # then:
 cd examples/telegram-bot
@@ -41,7 +41,7 @@ way to try the flow locally. For production you'd typically switch to a webhook
 The AskChannel-specific parts are tiny:
 
 ```ts
-import { createAskChannelClient } from "@askchannel/sdk";
+import { createAskChannelClient } from "@askchannelai/sdk";
 const ac = createAskChannelClient({ token: process.env.ASKCHANNEL_TOKEN });
 
 const channels = await ac.searchChannels(query);                 // dropdown

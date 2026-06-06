@@ -7,7 +7,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "npm run build -w @askchannel/sdk",
-    "typecheck": "npm run typecheck -w @askchannel/sdk"
+    "build": "npm run build -w @askchannelai/sdk",
+    "typecheck": "npm run typecheck -w @askchannelai/sdk"
   }
 }
