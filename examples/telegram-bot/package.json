@@ -1,0 +1,20 @@
+{
+  "name": "askchannel-telegram-bot-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Telegram bot with an inline channel-picker, built on @askchannel/sdk.",
+  "scripts": {
+    "dev": "tsx src/bot.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@askchannel/sdk": "*",
+    "grammy": "^1.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

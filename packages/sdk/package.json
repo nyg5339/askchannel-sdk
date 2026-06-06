@@ -1,0 +1,46 @@
+{
+  "name": "@askchannel/sdk",
+  "version": "0.1.0",
+  "description": "Tiny, dependency-free client for the AskChannel API — ask cited questions over a YouTube channel's transcripts.",
+  "keywords": [
+    "askchannel",
+    "youtube",
+    "transcripts",
+    "rag",
+    "chatbot",
+    "telegram",
+    "discord"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

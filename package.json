@@ -1,0 +1,13 @@
+{
+  "name": "askchannel-sdk-monorepo",
+  "private": true,
+  "description": "AskChannel SDK + examples",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @askchannel/sdk",
+    "typecheck": "npm run typecheck -w @askchannel/sdk"
+  }
+}
