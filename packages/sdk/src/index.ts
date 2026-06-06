@@ -8,6 +8,7 @@
 export { AskChannelClient, createAskChannelClient } from "./client.js";
 export { AskChannelError, isAskChannelError, codeForStatus } from "./errors.js";
 export { verifyWebhookSignature } from "./webhook.js";
+export { formatCompact } from "./format.js";
 export type { AskChannelErrorCode } from "./errors.js";
 export type {
   AskParams,
