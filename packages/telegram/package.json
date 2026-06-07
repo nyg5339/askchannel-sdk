@@ -1,0 +1,50 @@
+{
+  "name": "@askchannelai/telegram",
+  "version": "0.1.0",
+  "description": "Telegram glue for AskChannel bots — parse commands, build inline-picker dropdowns, and render ready-to-send HTML for the ask + import flows. Dependency-free; built on @askchannelai/sdk.",
+  "keywords": [
+    "askchannel",
+    "telegram",
+    "bot",
+    "grammy",
+    "youtube",
+    "transcripts",
+    "inline-mode"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@askchannelai/sdk": ">=0.3.0"
+  },
+  "devDependencies": {
+    "@askchannelai/sdk": "*",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

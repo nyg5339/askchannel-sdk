@@ -92,11 +92,15 @@ export interface ImportQuote {
   channelId: string;
   title: string;
   handle?: string;
-  /** Importable (non-short) video count — what you're billed for. */
+  /**
+   * Estimated importable video count. Estimated from the channel's total video
+   * count (every video treated as importable — an upper bound, Shorts included);
+   * the exact Shorts-excluded count is billed at import time. Equals `total`.
+   */
   importable: number;
   /** Total videos on the channel. */
   total: number;
-  /** Credit cost = `importable`. */
+  /** Estimated credit cost = `ceil(total / 10)` (1 credit per 10 videos). */
   creditCost: number;
   /** Current credit balance, or null for unlimited accounts. */
   balance: number | null;
